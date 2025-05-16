@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"strings"
+	"telegram-golang-tasks-bot/pck/models"
+	"telegram-golang-tasks-bot/pck/storage"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
@@ -18,7 +20,7 @@ const (
 	CommandCancelAdd  = "/cancel"
 )
 
-func handleUpdates(bot *tgbotapi.BotAPI, updates tgbotapi.UpdatesChannel, storage *Storage) {
+func handleUpdates(bot *tgbotapi.BotAPI, updates tgbotapi.UpdatesChannel, storage *storage.Storage) {
 	for update := range updates {
 		if update.CallbackQuery != nil {
 			handleCallbackQuery(bot, update.CallbackQuery, storage)
@@ -33,7 +35,7 @@ func handleUpdates(bot *tgbotapi.BotAPI, updates tgbotapi.UpdatesChannel, storag
 	}
 }
 
-func handleMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message, storage *Storage) {
+func handleMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message, storage *storage.Storage) {
 	userState, exists := storage.GetUserState(message.Chat.ID)
 
 	if exists && userState.Step > 0 {
@@ -47,11 +49,11 @@ func handleMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message, storage *Sto
 	case CommandAddTask:
 		startTaskAddition(bot, message.Chat.ID, storage)
 	case CommandEasy:
-		sendRandomTask(bot, message.Chat.ID, EasyLevel, storage)
+		sendRandomTask(bot, message.Chat.ID, models.EasyLevel, storage)
 	case CommandMedium:
-		sendRandomTask(bot, message.Chat.ID, MediumLevel, storage)
+		sendRandomTask(bot, message.Chat.ID, models.MediumLevel, storage)
 	case CommandHard:
-		sendRandomTask(bot, message.Chat.ID, HardLevel, storage)
+		sendRandomTask(bot, message.Chat.ID, models.HardLevel, storage)
 	case CommandCancelAdd:
 		cancelTaskAddition(bot, message.Chat.ID, storage)
 	default:
@@ -59,7 +61,7 @@ func handleMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message, storage *Sto
 	}
 }
 
-func handleCallbackQuery(bot *tgbotapi.BotAPI, callbackQuery *tgbotapi.CallbackQuery, storage *Storage) {
+func handleCallbackQuery(bot *tgbotapi.BotAPI, callbackQuery *tgbotapi.CallbackQuery, st *storage.Storage) {
 	data := callbackQuery.Data
 
 	if strings.HasPrefix(data, CommandShowAnswer) {
@@ -80,7 +82,7 @@ func handleCallbackQuery(bot *tgbotapi.BotAPI, callbackQuery *tgbotapi.CallbackQ
 			return
 		}
 
-		for _, task := range storage.tasks {
+		for _, task := range st.tasks {
 			if fmt.Sprintf("%d", task.ID) == taskID {
 				newText := messageText + "\n\nОтвет: ```go\n" + task.Answer + "\n```"
 
@@ -102,7 +104,7 @@ func handleCallbackQuery(bot *tgbotapi.BotAPI, callbackQuery *tgbotapi.CallbackQ
 	bot.AnswerCallbackQuery(callback)
 }
 
-func handleTaskAdditionProcess(bot *tgbotapi.BotAPI, message *tgbotapi.Message, storage *Storage, state UserState) {
+func handleTaskAdditionProcess(bot *tgbotapi.BotAPI, message *tgbotapi.Message, storage *storage.Storage, state models.UserState) {
 	switch state.Step {
 	case 1:
 		state.Task.Question = message.Text
@@ -117,9 +119,9 @@ func handleTaskAdditionProcess(bot *tgbotapi.BotAPI, message *tgbotapi.Message, 
 		msg := tgbotapi.NewMessage(message.Chat.ID, "Теперь выберите уровень сложности задачи:")
 		keyboard := tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(
-				tgbotapi.NewKeyboardButton(EasyLevel),
-				tgbotapi.NewKeyboardButton(MediumLevel),
-				tgbotapi.NewKeyboardButton(HardLevel),
+				tgbotapi.NewKeyboardButton(models.EasyLevel),
+				tgbotapi.NewKeyboardButton(models.MediumLevel),
+				tgbotapi.NewKeyboardButton(models.HardLevel),
 			),
 		)
 		keyboard.OneTimeKeyboard = true
@@ -127,7 +129,7 @@ func handleTaskAdditionProcess(bot *tgbotapi.BotAPI, message *tgbotapi.Message, 
 		bot.Send(msg)
 	case 3:
 		level := strings.ToLower(message.Text)
-		if level != EasyLevel && level != MediumLevel && level != HardLevel {
+		if level != models.EasyLevel && level != models.MediumLevel && level != models.HardLevel {
 			msg := tgbotapi.NewMessage(message.Chat.ID, "Пожалуйста, выберите уровень сложности, используя кнопки ниже.")
 			bot.Send(msg)
 			return
@@ -164,20 +166,20 @@ func sendHelpMessage(bot *tgbotapi.BotAPI, chatID int64) {
 	bot.Send(msg)
 }
 
-func startTaskAddition(bot *tgbotapi.BotAPI, chatID int64, storage *Storage) {
-	state := UserState{Step: 1, Task: Task{}}
+func startTaskAddition(bot *tgbotapi.BotAPI, chatID int64, storage *storage.Storage) {
+	state := models.UserState{Step: 1, Task: models.Task{}}
 	storage.SetUserState(chatID, state)
 	msg := tgbotapi.NewMessage(chatID, "Введите текст задачи:")
 	bot.Send(msg)
 }
 
-func cancelTaskAddition(bot *tgbotapi.BotAPI, chatID int64, storage *Storage) {
+func cancelTaskAddition(bot *tgbotapi.BotAPI, chatID int64, storage *storage.Storage) {
 	msg := tgbotapi.NewMessage(chatID, "Добавление задачи отменено.")
 	msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 	bot.Send(msg)
 }
 
-func sendRandomTask(bot *tgbotapi.BotAPI, chatID int64, level string, storage *Storage) {
+func sendRandomTask(bot *tgbotapi.BotAPI, chatID int64, level string, storage *storage.Storage) {
 	task, ok := storage.GetRandomTaskByLevel(level)
 	if !ok {
 		msg := tgbotapi.NewMessage(chatID, "Нет задач для выбранного уровня сложности.")

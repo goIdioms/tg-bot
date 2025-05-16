@@ -4,6 +4,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"telegram-golang-tasks-bot/pck/storage"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -25,7 +26,7 @@ func main() {
 	bot.Debug = true
 	log.Printf("Бот авторизован как %s", bot.Self.UserName)
 
-	storage := NewStorage()
+	storage := storage.NewStorage()
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
