@@ -7,37 +7,37 @@ import (
 )
 
 type Storage struct {
-	tasks      []models.Task              // List of all tasks
-	userStates map[int64]models.UserState // User states in the task adding process
-	nextID     int                        // Next available ID for a new task
-	mutex      sync.RWMutex               // Mutex for safe access to data
+	Tasks      []models.Task              // List of all tasks
+	UserStates map[int64]models.UserState // User states in the task adding process
+	NextID     int                        // Next available ID for a new task
+	Mutex      sync.RWMutex               // Mutex for safe access to data
 }
 
 func NewStorage() *Storage {
 	return &Storage{
-		tasks:      make([]models.Task, 0),
-		userStates: make(map[int64]models.UserState),
-		nextID:     1,
+		Tasks:      make([]models.Task, 0),
+		UserStates: make(map[int64]models.UserState),
+		NextID:     1,
 	}
 }
 
 func (s *Storage) AddTask(task models.Task) int {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
+	s.Mutex.Lock()
+	defer s.Mutex.Unlock()
 
-	task.ID = s.nextID
-	s.nextID++
-	s.tasks = append(s.tasks, task)
+	task.ID = s.NextID
+	s.NextID++
+	s.Tasks = append(s.Tasks, task)
 
 	return task.ID
 }
 
 func (s *Storage) GetRandomTaskByLevel(level string) (models.Task, bool) {
-	s.mutex.RLock()
-	defer s.mutex.RUnlock()
+	s.Mutex.RLock()
+	defer s.Mutex.RUnlock()
 
 	var levelTasks []models.Task
-	for _, task := range s.tasks {
+	for _, task := range s.Tasks {
 		if task.Level == level {
 			levelTasks = append(levelTasks, task)
 		}
@@ -52,20 +52,20 @@ func (s *Storage) GetRandomTaskByLevel(level string) (models.Task, bool) {
 }
 
 func (s *Storage) SetUserState(chatID int64, state models.UserState) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
-	s.userStates[chatID] = state
+	s.Mutex.Lock()
+	defer s.Mutex.Unlock()
+	s.UserStates[chatID] = state
 }
 
 func (s *Storage) GetUserState(chatID int64) (models.UserState, bool) {
-	s.mutex.RLock()
-	defer s.mutex.RUnlock()
-	state, exists := s.userStates[chatID]
+	s.Mutex.RLock()
+	defer s.Mutex.RUnlock()
+	state, exists := s.UserStates[chatID]
 	return state, exists
 }
 
 func (s *Storage) ClearUserState(chatID int64) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
-	delete(s.userStates, chatID)
+	s.Mutex.Lock()
+	defer s.Mutex.Unlock()
+	delete(s.UserStates, chatID)
 }

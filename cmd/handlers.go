@@ -61,7 +61,7 @@ func handleMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message, storage *sto
 	}
 }
 
-func handleCallbackQuery(bot *tgbotapi.BotAPI, callbackQuery *tgbotapi.CallbackQuery, st *storage.Storage) {
+func handleCallbackQuery(bot *tgbotapi.BotAPI, callbackQuery *tgbotapi.CallbackQuery, storage *storage.Storage) {
 	data := callbackQuery.Data
 
 	if strings.HasPrefix(data, CommandShowAnswer) {
@@ -82,7 +82,7 @@ func handleCallbackQuery(bot *tgbotapi.BotAPI, callbackQuery *tgbotapi.CallbackQ
 			return
 		}
 
-		for _, task := range st.tasks {
+		for _, task := range storage.Tasks {
 			if fmt.Sprintf("%d", task.ID) == taskID {
 				newText := messageText + "\n\nОтвет: ```go\n" + task.Answer + "\n```"
 
