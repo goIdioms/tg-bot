@@ -4,14 +4,21 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"telegram-golang-tasks-bot/pck/handlers"
 	"telegram-golang-tasks-bot/pck/storage"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("error loading .env file")
+	}
 
 	token := os.Getenv("TOKEN")
 	if token == "" {
@@ -35,5 +42,5 @@ func main() {
 		log.Fatalf("Ошибка при получении обновлений: %v", err)
 	}
 
-	handleUpdates(bot, updates, storage)
+	handlers.HandleUpdates(bot, updates, storage)
 }

@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ const (
 	CommandCancelAdd  = "/cancel"
 )
 
-func handleUpdates(bot *tgbotapi.BotAPI, updates tgbotapi.UpdatesChannel, storage *storage.Storage) {
+func HandleUpdates(bot *tgbotapi.BotAPI, updates tgbotapi.UpdatesChannel, storage *storage.Storage) {
 	for update := range updates {
 		if update.CallbackQuery != nil {
 			handleCallbackQuery(bot, update.CallbackQuery, storage)
