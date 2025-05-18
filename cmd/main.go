@@ -4,6 +4,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"telegram-golang-tasks-bot/pck/database"
 	"telegram-golang-tasks-bot/pck/handlers"
 	"telegram-golang-tasks-bot/pck/storage"
 	"time"
@@ -29,6 +30,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Ошибка при создании бота: %v", err)
 	}
+
+	database.InitDB()
 
 	bot.Debug = true
 	log.Printf("Бот авторизован как %s", bot.Self.UserName)
