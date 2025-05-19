@@ -2,20 +2,16 @@ package main
 
 import (
 	"log"
-	"math/rand"
 	"os"
 	"telegram-golang-tasks-bot/pck/database"
 	"telegram-golang-tasks-bot/pck/handlers"
 	"telegram-golang-tasks-bot/pck/storage"
-	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("error loading .env file")

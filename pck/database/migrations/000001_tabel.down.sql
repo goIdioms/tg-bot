@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS tasks;
+DROP TABLE IF EXISTS user_states;
+
 
 -- Применить миграции:
 -- migrate -database "postgres://user:password@localhost:5432/mydb?sslmode=disable" -path migrations up
