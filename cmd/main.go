@@ -2,44 +2,28 @@ package main
 
 import (
 	"log"
-	"os"
+	tgbot "telegram-golang-tasks-bot/pck/bot"
 	"telegram-golang-tasks-bot/pck/database"
 	"telegram-golang-tasks-bot/pck/handlers"
-	"telegram-golang-tasks-bot/pck/storage"
-
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("error loading .env file")
-	}
-
-	token := os.Getenv("TOKEN")
-	if token == "" {
-		log.Fatal("TOKEN environment variable is not set")
-	}
-
-	bot, err := tgbotapi.NewBotAPI(token)
-	if err != nil {
-		log.Fatalf("Ошибка при создании бота: %v", err)
-	}
-
 	database.InitDB()
 
-	bot.Debug = true
-	log.Printf("Бот авторизован как %s", bot.Self.UserName)
-
-	storage := storage.NewStorage()
-
-	u := tgbotapi.NewUpdate(0)
-	u.Timeout = 60
-	updates, err := bot.GetUpdatesChan(u)
+	bot, err := tgbot.InitBot()
 	if err != nil {
-		log.Fatalf("Ошибка при получении обновлений: %v", err)
+		log.Fatal(err)
 	}
 
-	handlers.HandleUpdates(bot, updates, storage)
+	router := tgbot.NewRouter()
+	router.Handle("start", handlers.StartHandler)
+	// router.Handle("help", handlers.HelpHandler)
+
+	for update := range bot.UpdatesChannel {
+		if update.Message != nil && update.Message.IsCommand() {
+			router.Route(bot.API, update)
+		} else {
+			// обработать обычные сообщения или callback-запросы
+		}
+	}
 }
