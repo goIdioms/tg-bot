@@ -15,25 +15,31 @@ const (
 	CommandCancelAdd  = "/cancel"
 )
 
-func StartHandler(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Привет! Я бот для задач по Golang.")
+func SendStartMessage(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	message := `Привет! Я бот для задач по Golang.
+Команды:
+/add - Добавить новую задачу
+/easy - Получить случайную легкую задачу
+/medium - Получить случайную задачу средней сложности
+/hard - Получить случайную сложную задачу
+/cancel - Отменить добавление задачи
+/help - Получить справку`
+
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, message)
 	bot.Send(msg)
 }
 
-// func HandleUpdates(bot *tgbotapi.BotAPI, updates tgbotapi.UpdatesChannel) {
-// for update := range updates {
-// 	if update.CallbackQuery != nil {
-// 		handleCallbackQuery(bot, update.CallbackQuery, storage)
-// 		continue
-// 	}
-
-// 	if update.Message == nil {
-// 		continue
-// 	}
-
-// 	handleMessage(bot, update.Message, storage)
-// }
-// }
+func SendHelpMessage(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	message := `Доступные команды:
+/add - Добавить новую задачу
+/easy - Получить случайную легкую задачу
+/medium - Получить случайную задачу средней сложности
+/hard - Получить случайную сложную задачу
+/cancel - Отменить добавление задачи
+/help - Получить справку`
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, message)
+	bot.Send(msg)
+}
 
 // func handleMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message, storage *storage.Storage) {
 // 	userState, exists := storage.GetUserState(message.Chat.ID)
@@ -141,29 +147,6 @@ func StartHandler(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 // 		msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 // 		bot.Send(msg)
 // 	}
-// }
-
-// func sendStartMessage(bot *tgbotapi.BotAPI, chatID int64) {
-// 	message := `Привет! Я бот для задач по Golang.
-// Команды:
-// /add - Добавить новую задачу
-// /easy - Получить случайную легкую задачу
-// /medium - Получить случайную задачу средней сложности
-// /hard - Получить случайную сложную задачу
-// /cancel - Отменить добавление задачи`
-// 	msg := tgbotapi.NewMessage(chatID, message)
-// 	bot.Send(msg)
-// }
-
-// func sendHelpMessage(bot *tgbotapi.BotAPI, chatID int64) {
-// 	message := `Доступные команды:
-// /add - Добавить новую задачу
-// /easy - Получить случайную легкую задачу
-// /medium - Получить случайную задачу средней сложности
-// /hard - Получить случайную сложную задачу
-// /cancel - Отменить добавление задачи`
-// 	msg := tgbotapi.NewMessage(chatID, message)
-// 	bot.Send(msg)
 // }
 
 // func startTaskAddition(bot *tgbotapi.BotAPI, chatID int64, storage *storage.Storage) {

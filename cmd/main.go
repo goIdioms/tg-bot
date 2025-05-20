@@ -16,14 +16,16 @@ func main() {
 	}
 
 	router := tgbot.NewRouter()
-	router.Handle("start", handlers.StartHandler)
-	// router.Handle("help", handlers.HelpHandler)
+	router.Handle("start", handlers.SendStartMessage)
+	router.Handle("help", handlers.SendHelpMessage)
 
 	for update := range bot.UpdatesChannel {
 		if update.Message != nil && update.Message.IsCommand() {
 			router.Route(bot.API, update)
 		} else {
-			// обработать обычные сообщения или callback-запросы
+			if update.CallbackQuery != nil {
+				// handleCallbackQuery(bot, update.CallbackQuery)
+			}
 		}
 	}
 }
