@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"log"
+	"strconv"
 	"strings"
 	"telegram-golang-tasks-bot/pck/database/repository"
 	"telegram-golang-tasks-bot/pck/models"
@@ -67,6 +68,25 @@ func CancelTaskAddition(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	bot.Send(msg)
 }
 
+func RandomEasyTask(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	task, ok := repository.GetEasyTask()
+	if !ok {
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Нет задач для выбранного уровня сложности.")
+		bot.Send(msg)
+		return
+	}
+
+	text := "Задача:\n```go\n" + task.Question + "\n```\nСложность: " + task.Level
+
+	button := tgbotapi.NewInlineKeyboardButtonData("Показать ответ", strconv.Itoa(task.ID))
+
+	keyboard := tgbotapi.NewInlineKeyboardMarkup(tgbotapi.NewInlineKeyboardRow(button))
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
+	msg.ParseMode = "Markdown"
+	msg.ReplyMarkup = keyboard
+	bot.Send(msg)
+}
+
 // func handleMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message, storage *storage.Storage) {
 // 	userState, exists := storage.GetUserState(message.Chat.ID)
 
@@ -93,48 +113,28 @@ func CancelTaskAddition(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 // 	}
 // }
 
-// func handleCallbackQuery(bot *tgbotapi.BotAPI, callbackQuery *tgbotapi.CallbackQuery, storage *storage.Storage) {
-// 	data := callbackQuery.Data
+func CallbackQuery(bot *tgbotapi.BotAPI, callbackQuery *tgbotapi.CallbackQuery) {
+	id := callbackQuery.Data
 
-// 	if strings.HasPrefix(data, CommandShowAnswer) {
-// 		parts := strings.Split(data, ":")
-// 		if len(parts) != 2 {
-// 			return
-// 		}
+	taskID, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		log.Printf("Error converting task ID: %v", err)
+		return
+	}
 
-// 		taskID := parts[1]
-// 		messageText := callbackQuery.Message.Text
-// 		lines := strings.Split(messageText, "\n")
-// 		if len(lines) < 3 {
-// 			return
-// 		}
+	task, ok := repository.GetAnswerByTaskID(taskID)
+	if ok {
 
-// 		answerLine := lines[len(lines)-1]
-// 		if strings.HasPrefix(answerLine, "Ответ: ```go") {
-// 			return
-// 		}
+		newText := "Задача:\n```go\n" + task.Question + "\n```\nСложность: " + task.Level + "\n\nОтвет: ```go\n" + task.Answer + "\n```"
 
-// 		for _, task := range storage.Tasks {
-// 			if fmt.Sprintf("%d", task.ID) == taskID {
-// 				newText := messageText + "\n\nОтвет: ```go\n" + task.Answer + "\n```"
+		editedMessage := tgbotapi.NewEditMessageText(callbackQuery.Message.Chat.ID, callbackQuery.Message.MessageID, newText)
+		editedMessage.ParseMode = "Markdown"
+		bot.Send(editedMessage)
+	}
 
-// 				edit := tgbotapi.NewEditMessageText(
-// 					callbackQuery.Message.Chat.ID,
-// 					callbackQuery.Message.MessageID,
-// 					newText,
-// 				)
-// 				edit.ParseMode = "Markdown"
-// 				edit.ReplyMarkup = &tgbotapi.InlineKeyboardMarkup{}
-
-// 				bot.Send(edit)
-// 				break
-// 			}
-// 		}
-// 	}
-
-// 	callback := tgbotapi.NewCallback(callbackQuery.ID, "")
-// 	bot.AnswerCallbackQuery(callback)
-// }
+	callback := tgbotapi.NewCallback(callbackQuery.ID, "")
+	bot.AnswerCallbackQuery(callback)
+}
 
 func HandleTaskAdditionProcess(bot *tgbotapi.BotAPI, update tgbotapi.Update, state models.UserState) {
 	switch state.Step {
@@ -194,19 +194,3 @@ func HandleTaskAdditionProcess(bot *tgbotapi.BotAPI, update tgbotapi.Update, sta
 		bot.Send(msg)
 	}
 }
-
-// func sendRandomTask(bot *tgbotapi.BotAPI, chatID int64, level string, storage *storage.Storage) {
-// 	task, ok := storage.GetRandomTaskByLevel(level)
-// 	if !ok {
-// 		msg := tgbotapi.NewMessage(chatID, "Нет задач для выбранного уровня сложности.")
-// 		bot.Send(msg)
-// 		return
-// 	}
-// 	text := "Задача:\n```go\n" + task.Question + "\n```\nСложность: " + task.Level
-// 	button := tgbotapi.NewInlineKeyboardButtonData("Показать ответ", CommandShowAnswer+":"+fmt.Sprintf("%d", task.ID))
-// 	keyboard := tgbotapi.NewInlineKeyboardMarkup(tgbotapi.NewInlineKeyboardRow(button))
-// 	msg := tgbotapi.NewMessage(chatID, text)
-// 	msg.ParseMode = "Markdown"
-// 	msg.ReplyMarkup = keyboard
-// 	bot.Send(msg)
-// }

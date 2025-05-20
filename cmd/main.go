@@ -19,8 +19,19 @@ func main() {
 	router.Handle("help", handlers.SendHelpMessage)
 	router.Handle("add", handlers.StartTaskAddition)
 	router.Handle("cancel", handlers.CancelTaskAddition)
+	router.Handle("easy", handlers.RandomEasyTask)
 
 	for update := range bot.UpdatesChannel {
+
+		if update.CallbackQuery != nil && bot != nil && bot.API != nil {
+			handlers.CallbackQuery(bot.API, update.CallbackQuery)
+			continue
+		}
+
+		if update.Message == nil {
+			continue
+		}
+
 		chatID := update.Message.Chat.ID
 		userState, exists := repository.GetUserState(chatID)
 		if exists && userState.Step > 0 {
@@ -35,9 +46,5 @@ func main() {
 		if update.Message.IsCommand() {
 			router.Route(bot.API, update)
 		}
-		if update.CallbackQuery != nil {
-			// handleCallbackQuery(bot, update.CallbackQuery)
-		}
-
 	}
 }
