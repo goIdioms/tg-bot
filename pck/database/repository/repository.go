@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"log"
 	"telegram-golang-tasks-bot/pck/models"
 )
@@ -17,4 +18,34 @@ func SetUserState(chatID int64, state models.UserState) error {
 	}
 
 	return nil
+}
+
+func GetUserState(chatID int64) (models.UserState, bool) {
+	query := `SELECT chat_id, step, task_question, task_answer, task_level, message_id FROM user_states WHERE chat_id = $1`
+	state := DB.QueryRow(query, chatID)
+
+	var s models.UserState
+	err := state.Scan(&s.ChatID, &s.Step, &s.Task.Question, &s.Task.Answer, &s.Task.Level, &s.MessageID)
+	if err == sql.ErrNoRows {
+		return models.UserState{}, false
+	}
+	if err != nil {
+		log.Printf("Ошибка при получении состояния пользователя: %v", err)
+		return models.UserState{}, false
+	}
+	return s, true
+}
+
+func AddTask(task models.Task) error {
+	query := `INSERT INTO tasks (question, answer, level) VALUES ($1, $2, $3)`
+
+	_, err := DB.Exec(query, task.Question, task.Answer, task.Level)
+
+	return err
+}
+
+func ClearUserState(chatID int64) error {
+	query := `DELETE FROM user_states WHERE chat_id = $1`
+	_, err := DB.Exec(query, chatID)
+	return err
 }
