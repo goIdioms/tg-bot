@@ -4,13 +4,12 @@ import (
 	"database/sql"
 	"log"
 	"os"
-	"telegram-golang-tasks-bot/pck/database/repository"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
 )
 
-func NewRepository() *repository.Repository {
+func InitDB() (*sql.DB, error) {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Ошибка загрузки файла .env:", err)
 	}
@@ -20,9 +19,6 @@ func NewRepository() *repository.Repository {
 	if err != nil {
 		log.Fatal("Ошибка подключения к базе данных:", err)
 	}
-	defer db.Close()
-
-	repo := repository.NewRepository(db)
 
 	err = db.Ping()
 	if err != nil {
@@ -31,6 +27,5 @@ func NewRepository() *repository.Repository {
 	}
 
 	log.Println("Успешное подключение к PostgreSQL!")
-
-	return repo
+	return db, err
 }

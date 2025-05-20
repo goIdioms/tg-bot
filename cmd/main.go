@@ -3,12 +3,10 @@ package main
 import (
 	"log"
 	tgbot "telegram-golang-tasks-bot/pck/bot"
-	"telegram-golang-tasks-bot/pck/database"
 	"telegram-golang-tasks-bot/pck/handlers"
 )
 
 func main() {
-	database.NewRepository()
 
 	bot, err := tgbot.InitBot()
 	if err != nil {
@@ -18,6 +16,7 @@ func main() {
 	router := tgbot.NewRouter()
 	router.Handle("start", handlers.SendStartMessage)
 	router.Handle("help", handlers.SendHelpMessage)
+	router.Handle("add", handlers.StartTaskAddition)
 
 	for update := range bot.UpdatesChannel {
 		if update.Message != nil && update.Message.IsCommand() {

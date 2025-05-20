@@ -1,8 +1,6 @@
 package bot
 
 import (
-	"telegram-golang-tasks-bot/pck/database/repository"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -16,7 +14,7 @@ func (r *Router) Handle(command string, handler HandlerFunc) {
 	r.handlers[command] = handler
 }
 
-func (r *Router) Route(bot *tgbotapi.BotAPI, update tgbotapi.Update, repo ...*repository.Repository) {
+func (r *Router) Route(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	command := update.Message.Command()
 	if handler, ok := r.handlers[command]; ok {
 		handler(bot, update)

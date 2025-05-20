@@ -1,6 +1,10 @@
 package handlers
 
 import (
+	"log"
+	"telegram-golang-tasks-bot/pck/database/repository"
+	"telegram-golang-tasks-bot/pck/models"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -41,12 +45,18 @@ func SendHelpMessage(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	bot.Send(msg)
 }
 
-// func startTaskAddition(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-// 	state := models.UserState{Step: 1, Task: models.Task{}}
-// 	storage.SetUserState(chatID, state)
-// 	msg := tgbotapi.NewMessage(chatID, "Введите текст задачи:")
-// 	bot.Send(msg)
-// }
+func StartTaskAddition(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	state := models.UserState{Step: 1, Task: models.Task{}}
+
+	err := repository.SetUserState(update.Message.Chat.ID, state)
+	if err != nil {
+		log.Printf("Ошибка при сохранении состояния пользователя: %v", err)
+		return
+	}
+
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Введите текст задачи:")
+	bot.Send(msg)
+}
 
 // func handleMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message, storage *storage.Storage) {
 // 	userState, exists := storage.GetUserState(message.Chat.ID)
