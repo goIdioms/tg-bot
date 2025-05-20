@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	database.InitDB()
+	database.NewRepository()
 
 	bot, err := tgbot.InitBot()
 	if err != nil {

@@ -41,6 +41,13 @@ func SendHelpMessage(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	bot.Send(msg)
 }
 
+// func startTaskAddition(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+// 	state := models.UserState{Step: 1, Task: models.Task{}}
+// 	storage.SetUserState(chatID, state)
+// 	msg := tgbotapi.NewMessage(chatID, "Введите текст задачи:")
+// 	bot.Send(msg)
+// }
+
 // func handleMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message, storage *storage.Storage) {
 // 	userState, exists := storage.GetUserState(message.Chat.ID)
 
@@ -147,13 +154,6 @@ func SendHelpMessage(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 // 		msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
 // 		bot.Send(msg)
 // 	}
-// }
-
-// func startTaskAddition(bot *tgbotapi.BotAPI, chatID int64, storage *storage.Storage) {
-// 	state := models.UserState{Step: 1, Task: models.Task{}}
-// 	storage.SetUserState(chatID, state)
-// 	msg := tgbotapi.NewMessage(chatID, "Введите текст задачи:")
-// 	bot.Send(msg)
 // }
 
 // func cancelTaskAddition(bot *tgbotapi.BotAPI, chatID int64, storage *storage.Storage) {
