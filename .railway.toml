@@ -1,0 +1,14 @@
+# Этот файл содержит настройки для Railway
+# https://docs.railway.app/deploy/config-as-code
+
+[[services]]
+  name = "bot"
+  [services.env]
+    PORT = "8080"
+
+[[services]]
+  name = "postgresql"
+  [services.env]
+    POSTGRES_USER = "postgres"
+    POSTGRES_PASSWORD = "${DB_PASSWORD}"
+    POSTGRES_DB = "bot"
