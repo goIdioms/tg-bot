@@ -10,8 +10,10 @@ import (
 )
 
 func InitDB() (*sql.DB, error) {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Ошибка загрузки файла .env:", err)
+	if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
+		if err := godotenv.Load(); err != nil {
+			log.Println("Не удалось загрузить .env (продакшен):", err)
+		}
 	}
 
 	dsn := os.Getenv("DATABASE_URL")
