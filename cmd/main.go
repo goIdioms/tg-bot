@@ -2,12 +2,33 @@ package main
 
 import (
 	"log"
+	"net/http"
+	"os"
 	tgbot "telegram-golang-tasks-bot/pck/bot"
 	"telegram-golang-tasks-bot/pck/database/repository"
 	"telegram-golang-tasks-bot/pck/handlers"
 )
 
+// for Railway
+func startHTTPServer() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	go func() {
+		log.Printf("Starting HTTP server on port %s", port)
+		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("Telegram bot is running!"))
+		})
+		if err := http.ListenAndServe(":"+port, nil); err != nil {
+			log.Printf("HTTP server error: %v", err)
+		}
+	}()
+}
+
 func main() {
+	startHTTPServer()
 
 	bot, err := tgbot.InitBot()
 	if err != nil {
