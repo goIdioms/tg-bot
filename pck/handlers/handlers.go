@@ -10,7 +10,6 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-// Константы для команд бота
 const (
 	CommandStart      = "/start"
 	CommandAddTask    = "/add"
@@ -87,31 +86,43 @@ func RandomEasyTask(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	bot.Send(msg)
 }
 
-// func handleMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message, storage *storage.Storage) {
-// 	userState, exists := storage.GetUserState(message.Chat.ID)
+func RandomMediumTask(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	task, ok := repository.GetMediumTask()
+	if !ok {
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Нет задач для выбранного уровня сложности.")
+		bot.Send(msg)
+		return
+	}
 
-// 	if exists && userState.Step > 0 {
-// 		handleTaskAdditionProcess(bot, message, storage, userState)
-// 		return
-// 	}
+	text := "Задача:\n```go\n" + task.Question + "\n```\nСложность: " + task.Level
 
-// 	switch message.Text {
-// 	case CommandStart:
-// 		sendStartMessage(bot, message.Chat.ID)
-// 	case CommandAddTask:
-// 		startTaskAddition(bot, message.Chat.ID, storage)
-// 	case CommandEasy:
-// 		sendRandomTask(bot, message.Chat.ID, models.EasyLevel, storage)
-// 	case CommandMedium:
-// 		sendRandomTask(bot, message.Chat.ID, models.MediumLevel, storage)
-// 	case CommandHard:
-// 		sendRandomTask(bot, message.Chat.ID, models.HardLevel, storage)
-// 	case CommandCancelAdd:
-// 		cancelTaskAddition(bot, message.Chat.ID, storage)
-// 	default:
-// 		sendHelpMessage(bot, message.Chat.ID)
-// 	}
-// }
+	button := tgbotapi.NewInlineKeyboardButtonData("Показать ответ", strconv.Itoa(task.ID))
+
+	keyboard := tgbotapi.NewInlineKeyboardMarkup(tgbotapi.NewInlineKeyboardRow(button))
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
+	msg.ParseMode = "Markdown"
+	msg.ReplyMarkup = keyboard
+	bot.Send(msg)
+}
+
+func RandomHardTask(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	task, ok := repository.GetHardTask()
+	if !ok {
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Нет задач для выбранного уровня сложности.")
+		bot.Send(msg)
+		return
+	}
+
+	text := "Задача:\n```go\n" + task.Question + "\n```\nСложность: " + task.Level
+
+	button := tgbotapi.NewInlineKeyboardButtonData("Показать ответ", strconv.Itoa(task.ID))
+
+	keyboard := tgbotapi.NewInlineKeyboardMarkup(tgbotapi.NewInlineKeyboardRow(button))
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
+	msg.ParseMode = "Markdown"
+	msg.ReplyMarkup = keyboard
+	bot.Send(msg)
+}
 
 func CallbackQuery(bot *tgbotapi.BotAPI, callbackQuery *tgbotapi.CallbackQuery) {
 	id := callbackQuery.Data

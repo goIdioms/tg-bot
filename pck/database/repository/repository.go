@@ -50,6 +50,17 @@ func ClearUserState(chatID int64) error {
 	return err
 }
 
+func GetAnswerByTaskID(taskID int64) (models.Task, bool) {
+	query := `SELECT id, question, answer, level FROM tasks WHERE id = $1`
+
+	var task models.Task
+	err := DB.QueryRow(query, taskID).Scan(&task.ID, &task.Question, &task.Answer, &task.Level)
+	if err == sql.ErrNoRows {
+		return models.Task{}, false
+	}
+	return task, true
+}
+
 func GetEasyTask() (models.Task, bool) {
 	query := `SELECT id, question, answer, level FROM tasks WHERE level = $1 ORDER BY RANDOM() LIMIT 1`
 
@@ -63,11 +74,20 @@ func GetEasyTask() (models.Task, bool) {
 	return task, true
 }
 
-func GetAnswerByTaskID(taskID int64) (models.Task, bool) {
-	query := `SELECT id, question, answer, level FROM tasks WHERE id = $1`
-
+func GetMediumTask() (models.Task, bool) {
+	query := `SELECT id, question, answer, level FROM tasks WHERE level = $1 ORDER BY RANDOM() LIMIT 1`
 	var task models.Task
-	err := DB.QueryRow(query, taskID).Scan(&task.ID, &task.Question, &task.Answer, &task.Level)
+	err := DB.QueryRow(query, models.MediumLevel).Scan(&task.ID, &task.Question, &task.Answer, &task.Level)
+	if err == sql.ErrNoRows {
+		return models.Task{}, false
+	}
+	return task, true
+}
+
+func GetHardTask() (models.Task, bool) {
+	query := `SELECT id, question, answer, level FROM tasks WHERE level = $1 ORDER BY RANDOM() LIMIT 1`
+	var task models.Task
+	err := DB.QueryRow(query, models.HardLevel).Scan(&task.ID, &task.Question, &task.Answer, &task.Level)
 	if err == sql.ErrNoRows {
 		return models.Task{}, false
 	}

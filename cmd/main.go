@@ -20,6 +20,8 @@ func main() {
 	router.Handle("add", handlers.StartTaskAddition)
 	router.Handle("cancel", handlers.CancelTaskAddition)
 	router.Handle("easy", handlers.RandomEasyTask)
+	router.Handle("medium", handlers.RandomMediumTask)
+	router.Handle("hard", handlers.RandomHardTask)
 
 	for update := range bot.UpdatesChannel {
 
