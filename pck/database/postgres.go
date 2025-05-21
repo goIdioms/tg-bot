@@ -14,7 +14,7 @@ func InitDB() (*sql.DB, error) {
 		log.Fatal("Ошибка загрузки файла .env:", err)
 	}
 
-	dsn := os.Getenv("DSN")
+	dsn := os.Getenv("DATABASE_URL")
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		log.Fatal("Ошибка подключения к базе данных:", err)
