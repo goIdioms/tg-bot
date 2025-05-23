@@ -14,7 +14,7 @@ func SendMenuMessage(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	message := `
 Главное меню:
 /tasks - решать задачи
-/teory - теоретические вопросы
+/theory - теоретические вопросы
 /soft_skills - популярные вопросы на собеседовании
 
 /new_item - для разработчиков`

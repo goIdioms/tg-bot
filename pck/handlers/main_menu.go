@@ -4,7 +4,7 @@ import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 
 func SendStartMessage(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	message := `Привет!
-	Я бот созданный для помощи подготовки к собеседованию по бэкэнд разработке.
+Я бот созданный для помощи подготовки к собеседованию по бэкэнд разработке.
 Команды:
 
 /tasks - решать задачи
