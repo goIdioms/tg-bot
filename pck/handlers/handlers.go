@@ -10,38 +10,14 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-const (
-	CommandStart      = "/start"
-	CommandAddTask    = "/add"
-	CommandEasy       = "/easy"
-	CommandMedium     = "/medium"
-	CommandHard       = "/hard"
-	CommandShowAnswer = "show_answer"
-	CommandCancelAdd  = "/cancel"
-)
+func SendMenuMessage(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	message := `
+Главное меню:
+/tasks - решать задачи
+/teory - теоретические вопросы
+/soft_skills - популярные вопросы на собеседовании
 
-func SendStartMessage(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	message := `Привет! Я бот для задач по Golang.
-Команды:
-/add - Добавить новую задачу
-/easy - Получить случайную легкую задачу
-/medium - Получить случайную задачу средней сложности
-/hard - Получить случайную сложную задачу
-/cancel - Отменить добавление задачи
-/help - Получить справку`
-
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, message)
-	bot.Send(msg)
-}
-
-func SendHelpMessage(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	message := `Доступные команды:
-/add - Добавить новую задачу
-/easy - Получить случайную легкую задачу
-/medium - Получить случайную задачу средней сложности
-/hard - Получить случайную сложную задачу
-/cancel - Отменить добавление задачи
-/help - Получить справку`
+/new_item - для разработчиков`
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, message)
 	bot.Send(msg)
 }

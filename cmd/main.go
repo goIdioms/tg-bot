@@ -37,12 +37,22 @@ func main() {
 
 	router := tgbot.NewRouter()
 	router.Handle("start", handlers.SendStartMessage)
-	router.Handle("help", handlers.SendHelpMessage)
-	router.Handle("add", handlers.StartTaskAddition)
-	router.Handle("cancel", handlers.CancelTaskAddition)
+	router.Handle("menu", handlers.SendMenuMessage)
+
+	router.Handle("soft_skills", handlers.SendSoftSkillsMessage)
+
+	router.Handle("tasks", handlers.SendTasksMessage)
 	router.Handle("easy", handlers.RandomEasyTask)
 	router.Handle("medium", handlers.RandomMediumTask)
 	router.Handle("hard", handlers.RandomHardTask)
+
+	router.Handle("new_item ", handlers.SendNewItemMessage)
+	router.Handle("add_task", handlers.StartTaskAddition)
+	router.Handle("cancel_task", handlers.CancelTaskAddition)
+
+	router.Handle("theory", handlers.SendTheoryMessage)
+	router.Handle("theory_tasks", handlers.SendTheoryTasksMessage)
+	router.Handle("theory_skills", handlers.SendTheorySkillsMessage)
 
 	for update := range bot.UpdatesChannel {
 
