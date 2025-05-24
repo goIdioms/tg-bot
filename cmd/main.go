@@ -46,7 +46,7 @@ func main() {
 	router.Handle("medium", handlers.RandomMediumTask)
 	router.Handle("hard", handlers.RandomHardTask)
 
-	router.Handle("new_item ", handlers.SendNewItemMessage)
+	router.Handle("new_item", handlers.SendNewItemMessage)
 	router.Handle("add_task", handlers.StartTaskAddition)
 	router.Handle("cancel_task", handlers.CancelTaskAddition)
 
